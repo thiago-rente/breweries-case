@@ -1,0 +1,109 @@
+services:
+  minio:
+    image: docker.io/bitnami/minio:2024
+    container_name: minio1
+    hostname: minio1
+    networks:
+      - default_net
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - ./data:/bitnami/minio/data
+    environment:
+      - MINIO_ROOT_USER=brew
+      - MINIO_ROOT_PASSWORD=brew4321
+      - MINIO_DEFAULT_BUCKETS=bronze,silver,gold
+
+  spark:
+    image: docker.io/bitnami/spark:3.5.0
+    hostname: spark1
+    container_name: spark1
+    networks:
+      - default_net
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    ports:
+      - '8080:8080'
+      - '7077:7077'
+
+  spark-worker-a:
+    image: docker.io/bitnami/spark:3.5.0
+    networks:
+      - default_net
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=2G      #<--- adjust accordingly
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_PORT=7078
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+
+  spark-worker-b:
+    image: docker.io/bitnami/spark:3.5.0
+    networks:
+      - default_net
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=2G      #<--- adjust accordingly
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+
+  airflow:
+    #image: apache/airflow:2.10.2rc1-python3.10
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: airflow
+    hostname: airflow
+    networks:
+      - default_net
+    volumes:
+      - ./requirements.txt:/opt/airflow/requirements.txt
+      - ./connections.json:/opt/airflow/connections.json
+      - ./dags:/opt/airflow/dags
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=false
+      - AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL=5
+      - AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS=false
+      - AIRFLOW__CORE__TEST_CONNECTION=Enabled
+    ports:
+      - 8081:8080
+    command: 'bash -c "pip3 install -r requirements.txt && 
+                        airflow db init && 
+                        airflow users create --username airflow --password airflow --role Admin --firstname Airflow --lastname Airflow --email airflow@email.com && 
+                        airflow connections import connections.json && 
+                        airflow webserver -D && 
+                        airflow scheduler -D"'
+
+  # Jupyter Notebooks
+  jupyter:
+    image: jupyter/pyspark-notebook:2023-10-20 # pyspark
+    container_name: jupyter
+    hostname: jupyter
+    networks:
+      - default_net
+    ports:
+      - "8888:8888"
+      - "4040-4080:4040-4080"
+    volumes:
+      - ./requirements.txt:/home/src/requirements.txt
+      - ./notebooks:/home/jovyan/work/notebooks/
+    command: 'bash -c "pip3 install -r /home/src/requirements.txt && start-notebook.sh --NotebookApp.token="'
+
+networks:
+    default_net:

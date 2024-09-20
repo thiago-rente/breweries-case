@@ -1,0 +1,32 @@
+{
+    "conn_api": {
+      "conn_type": "http",
+      "description": "",
+      "login": "",
+      "password": null,
+      "host": "api.openbrewerydb.org",
+      "port": null,
+      "schema": "",
+      "extra": ""
+    },
+    "conn_s3": {
+      "conn_type": "aws",
+      "description": "",
+      "login": "brew",
+      "password": "brew4321",
+      "host": "",
+      "port": null,
+      "schema": "",
+      "extra": "{\"endpoint_url\": \"http://minio1:9000\"}"
+    },
+    "conn_spark": {
+      "conn_type": "spark",
+      "description": "",
+      "login": "c",
+      "password": null,
+      "host": "spark://spark1",
+      "port": 7077,
+      "schema": "",
+      "extra": "{\"deploy-mode\": \"client\", \"spark-binary\": \"spark-submit\"}"
+    }
+  }

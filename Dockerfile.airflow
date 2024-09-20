@@ -1,0 +1,48 @@
+FROM apache/airflow:2.10.2rc1-python3.10
+
+USER root
+
+###############################
+## Begin JAVA installation
+###############################
+# Java is required in order to spark-submit work
+# Install OpenJDK-17
+RUN apt update && \
+    apt-get install -y openjdk-17-jdk && \
+    apt-get install -y ant && \
+    apt-get install -y wget && \
+    apt-get clean;
+
+# Set JAVA_HOME
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
+RUN export JAVA_HOME
+###############################
+## Finish JAVA installation
+###############################
+
+
+###############################
+## SPARK files and variables
+###############################
+ARG SPARK_VERSION="3.5.0"
+ARG HADOOP_VERSION="3"
+ENV SPARK_HOME=/usr/local/spark
+
+# Spark submit binaries and jars (Spark binaries must be the same version of spark cluster)
+RUN cd "/tmp" && \
+        wget "http://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" && \
+        tar -xvzf "spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" && \
+        mkdir -p "${SPARK_HOME}/bin" && \
+        mkdir -p "${SPARK_HOME}/assembly/target/scala-2.12/jars" && \
+        cp -a "spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}/bin/." "${SPARK_HOME}/bin/" && \
+        cp -a "spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}/jars/." "${SPARK_HOME}/assembly/target/scala-2.12/jars/" && \
+        rm "spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"
+
+# Create SPARK_HOME env var
+RUN export SPARK_HOME
+ENV PATH=$PATH:/usr/local/spark/bin
+###############################
+## Finish SPARK files and variables
+###############################
+
+USER airflow

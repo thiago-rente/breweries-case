@@ -143,47 +143,5 @@ services:
     stdin_open: true
     #tty: true
 
-  #trino:
-  #  image: trinodb/trino:458
-  #  container_name: trino
-  #  hostname: trino
-  #  ports:
-  #    - "8082:8080" 
-  #  volumes:
-  #    - ./trino/catalog:/etc/trino/catalog 
-  #  networks:
-  #    - default_net
-#
-  #postgres:
-  #  image: 'postgres:11'
-  #  hostname: postgres
-  #  container_name: postgres
-  #  expose:
-  #    - '5432'
-  #  ports:
-  #    - '5431:5432'
-  #  environment:
-  #    POSTGRES_USER: admin
-  #    POSTGRES_PASSWORD: admin
-  #    POSTGRES_DB: hive_db
-  #  networks:
-  #    - default_net
-#
-  #hive-metastore:
-  #  build: 
-  #    context: .
-  #    dockerfile: Dockerfile.hivemetastore
-  #  container_name: hive-metastore
-  #  hostname: hive-metastore
-  #  environment:
-  #    METASTORE_DB_HOSTNAME: postgres
-  #    METASTORE_TYPE: postgres
-  #  ports:
-  #    - 9083:9083
-  #  networks:
-  #    - default_net
-  #  depends_on: 
-  #    - postgres
-
 networks:
     default_net:

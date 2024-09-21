@@ -6,10 +6,10 @@ from airflow.contrib.operators.spark_submit_operator import SparkSubmitOperator
 
 from scripts.bronze import bronze
 
-with DAG(dag_id='breweries_pipeline',
-         default_args={'owner':'airflow', 'retries':3},
-         schedule_interval="0 0 * * *",
-         start_date=days_ago(1),
+with DAG(dag_id='test_breweries_pipeline',
+         default_args={'owner':'airflow'},
+         schedule_interval=None,
+         start_date=days_ago(2),
          tags=['etl', 'breweries', 'lake']) as dag:
 
      execution_date_time = '{{ ts_nodash }}'

@@ -12,7 +12,7 @@ def save_file(datetime, file):
     destination_file = bucket_name + "/" + prefix + "/" + datetime + ".json"
 
     s3.load_string(
-        str(file),
+        json.dumps(file),
         key= prefix + '/'+ filename,
         bucket_name=bucket_name,
         replace=True

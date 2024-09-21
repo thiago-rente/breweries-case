@@ -1,0 +1,17 @@
+FROM apache/superset:994de1f-py310
+
+USER root
+
+RUN pip install sqlalchemy-drill
+
+ENV ADMIN_USERNAME $ADMIN_USERNAME
+ENV ADMIN_EMAIL $ADMIN_EMAIL
+ENV ADMIN_PASSWORD $ADMIN_PASSWORD
+
+COPY --chown=superset:superset --chmod=755 ./superset/superset-init.sh /superset-init.sh
+
+COPY ./superset/superset-config.py /app/
+ENV SUPERSET_CONFIG_PATH /app/superset-config.py
+
+USER superset
+ENTRYPOINT [ "/superset-init.sh" ]

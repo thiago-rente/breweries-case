@@ -83,6 +83,7 @@ services:
       - AIRFLOW__CORE__TEST_CONNECTION=Enabled
     ports:
       - 8081:8080
+      - "4140-4180:4040-4080"
     command: 'bash -c "pip3 install -r requirements.txt && 
                         airflow db init && 
                         airflow users create --username airflow --password airflow --role Admin --firstname Airflow --lastname Airflow --email airflow@email.com && 
@@ -104,6 +105,85 @@ services:
       - ./requirements.txt:/home/src/requirements.txt
       - ./notebooks:/home/jovyan/work/notebooks/
     command: 'bash -c "pip3 install -r /home/src/requirements.txt && start-notebook.sh --NotebookApp.token="'
+
+  superset:
+    build:
+      context: .
+      dockerfile: Dockerfile.superset
+    #image: apache/superset:994de1f-py310
+    container_name: superset
+    hostname: superset
+    networks:
+      - default_net
+    environment:
+      - ADMIN_USERNAME=brew
+      - ADMIN_EMAIL=brew@superset.com
+      - ADMIN_PASSWORD=brew4321
+    ports:
+      - '8088:8088'
+    
+  drill:
+    image: apache/drill:1.21.2
+    hostname: drill
+    container_name: drill
+    networks:
+      - default_net
+    ports:
+      - '8047:8047'
+      - '31010:31010'
+    environment:
+      - MINIO_ROOT_USER=brew
+      - MINIO_ROOT_PASSWORD=brew4321
+      - MINIO_BUCKET_NAME='gold'
+    volumes:
+      # If needed, override default settings
+      - ./drill/core-site.xml:/opt/drill/conf/core-site.xml
+      # Register default storage plugins
+      - ./drill/storage-plugins-override.conf:/opt/drill/conf/storage-plugins-override.conf
+    stdin_open: true
+    #tty: true
+
+  #trino:
+  #  image: trinodb/trino:458
+  #  container_name: trino
+  #  hostname: trino
+  #  ports:
+  #    - "8082:8080" 
+  #  volumes:
+  #    - ./trino/catalog:/etc/trino/catalog 
+  #  networks:
+  #    - default_net
+#
+  #postgres:
+  #  image: 'postgres:11'
+  #  hostname: postgres
+  #  container_name: postgres
+  #  expose:
+  #    - '5432'
+  #  ports:
+  #    - '5431:5432'
+  #  environment:
+  #    POSTGRES_USER: admin
+  #    POSTGRES_PASSWORD: admin
+  #    POSTGRES_DB: hive_db
+  #  networks:
+  #    - default_net
+#
+  #hive-metastore:
+  #  build: 
+  #    context: .
+  #    dockerfile: Dockerfile.hivemetastore
+  #  container_name: hive-metastore
+  #  hostname: hive-metastore
+  #  environment:
+  #    METASTORE_DB_HOSTNAME: postgres
+  #    METASTORE_TYPE: postgres
+  #  ports:
+  #    - 9083:9083
+  #  networks:
+  #    - default_net
+  #  depends_on: 
+  #    - postgres
 
 networks:
     default_net:

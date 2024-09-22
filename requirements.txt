@@ -5,3 +5,4 @@ numpy==1.26.4
 delta-spark
 s3fs
 apache-airflow-providers-apache-spark
+pytest

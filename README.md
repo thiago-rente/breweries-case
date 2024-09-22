@@ -20,6 +20,11 @@ This project is a lakehouse for the breweries data. It's a test that consists in
 
 ## Getting Started <a name = "getting_started"></a>
 
+First, we need to clone this repo:
+```
+git clone https://github.com/thiago-rente/breweries-case.git
+```
+
 The project is using Apache-Airflow to orchestrate, Python and Pyspark in DAG's tasks, MinIO as storage simulating Amazon S3 Buckets, Apache-Drill as (SQL Query Engine) to read Delta tables (gold layer) and Apache Superset to data visualization.
 
 Link to resources:

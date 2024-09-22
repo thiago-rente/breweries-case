@@ -18,8 +18,6 @@ with DAG(dag_id='breweries_pipeline',
 
      start = EmptyOperator(task_id="start", dag=dag)
 
-     test_step = 
-
      bronze_step = PythonOperator(
         task_id="bronze_step",
         python_callable=bronze,

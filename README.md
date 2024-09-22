@@ -7,6 +7,7 @@ Breweries Lake
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
+- [What comes next?](#what_comes_next)
 
 ## About <a name = "about"></a>
 
@@ -92,3 +93,7 @@ To shutdown, use this command:
 ```bash
 docker compose down
 ```
+
+## What comes next? <a name = "what_comes_next"></a>
+
+In a productive environment, in addition to logs we can define other alert methods if any step of our ELT fails. Apache Airflow offers plugins and connections to group-chat softwares like Slack and Mail Servers. Whenever a dag fails, a message is sent to a group of people responsible to analyze the pipeline.

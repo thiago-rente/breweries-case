@@ -8,12 +8,14 @@ spark = SparkSession(SparkContext(conf=SparkConf()).getOrCreate())
 
 datetime = sys.argv[1]
 
+# Read the Delta table from Silver bucket
 source_bucket = "silver"
 prefix_bucket = "breweries"
 source_path = f"s3a://{source_bucket}/{prefix_bucket}/"
 
 print(f"- Starting {source_path} read.")
 
+# Write the aggregated view with quantity of breweries by type and location in a Delta table within gold bucket
 agg_breweries_data = spark.sql(f'''
        SELECT
             country, state, city, brewery_type, count(1) as quantity

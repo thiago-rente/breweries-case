@@ -1,3 +1,5 @@
-data/*
-notebooks/.ipynb_checkpoints
-dags/__pycache__
+minio/data/*
+jupyter/notebooks/.ipynb_checkpoints
+airflow/dags/__pycache__
+airflow/tests/__pycache__
+.DS_Store

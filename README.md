@@ -7,6 +7,7 @@ Breweries Lake
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
+- [Tests](#tests)
 - [What comes next?](#what_comes_next)
 
 ## About <a name = "about"></a>
@@ -93,6 +94,12 @@ To shutdown, use this command:
 ```bash
 docker compose down
 ```
+
+## Tests <a name = "tests"></a>
+
+Before working in the ELT DAG in Apache Airflow, I used the Jupyter Lab environment to develop and test the medallion steps, validating the connections between the containers (Jupyter, spark, minio) and the integrity of data.
+
+After that, when developing the DAG, I made some tests using pytest to check API request status, DAG's integrity, access to minio and spark and check the schema of data, validating the "key" columns of our project (location and brewery type).
 
 ## What comes next? <a name = "what_comes_next"></a>
 

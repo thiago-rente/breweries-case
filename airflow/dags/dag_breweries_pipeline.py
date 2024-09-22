@@ -1,20 +1,21 @@
 from airflow import DAG
 from airflow.utils.dates import days_ago
-from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.python_operator import PythonOperator
-from airflow.contrib.operators.spark_submit_operator import SparkSubmitOperator
+from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import PythonOperator
+from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+import pendulum
 
 from scripts.bronze import bronze
 
-with DAG(dag_id='test_breweries_pipeline',
-         default_args={'owner':'airflow'},
-         schedule_interval=None,
-         start_date=days_ago(2),
+with DAG(dag_id='breweries_pipeline',
+         default_args={'owner':'airflow', 'retries':3},
+         schedule="0 0 * * *",
+         start_date=pendulum.today('UTC').add(days=-1),
          tags=['etl', 'breweries', 'lake']) as dag:
 
      execution_date_time = '{{ ts_nodash }}'
 
-     start = DummyOperator(task_id="start", dag=dag)
+     start = EmptyOperator(task_id="start", dag=dag)
 
      bronze_step = PythonOperator(
         task_id="bronze_step",
@@ -40,7 +41,7 @@ with DAG(dag_id='test_breweries_pipeline',
             "spark.hadoop.fs.s3a.connection.ssl.enabled": "false",
             "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
             "spark.hadoop.fs.s3a.connection.estabilish.timeout": "5000"
-        },
+        }, #spark configs to access the bucket and work with delta tables
         packages="org.apache.hadoop:hadoop-aws:3.3.4,io.delta:delta-spark_2.12:3.2.0"
      )
 
@@ -65,6 +66,6 @@ with DAG(dag_id='test_breweries_pipeline',
         packages="org.apache.hadoop:hadoop-aws:3.3.4,io.delta:delta-spark_2.12:3.2.0"
      )
 
-     end = DummyOperator(task_id="end", dag=dag)
+     end = EmptyOperator(task_id="end", dag=dag)
 
      start >> bronze_step >> silver_step >> gold_step >> end

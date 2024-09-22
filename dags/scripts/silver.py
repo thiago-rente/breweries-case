@@ -17,8 +17,6 @@ bronze_data = spark.read.format('json').load(source_path)
 
 print(f"- {source_path} read.")
 
-bronze_data.printSchema()
-
 target_bucket = "silver"
 target_path = f"s3a://{target_bucket}/{prefix_bucket}/"
 

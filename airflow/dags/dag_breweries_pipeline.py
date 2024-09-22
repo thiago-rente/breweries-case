@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
+
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 import pendulum
 
@@ -16,6 +17,8 @@ with DAG(dag_id='breweries_pipeline',
      execution_date_time = '{{ ts_nodash }}'
 
      start = EmptyOperator(task_id="start", dag=dag)
+
+     test_step = 
 
      bronze_step = PythonOperator(
         task_id="bronze_step",

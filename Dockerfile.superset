@@ -1,4 +1,4 @@
-FROM apache/superset:994de1f-py310
+FROM apache/superset:f3e4347-py310
 
 USER root
 

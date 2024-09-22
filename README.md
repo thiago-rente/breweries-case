@@ -95,11 +95,21 @@ To shutdown, use this command:
 docker compose down
 ```
 
+To connect to Drill via Apache Superset, a Database SQL Alchemy URI connection needs to be created, the connection string to connect drill is:
+```
+drill://drill:8047/s3.root?use_ssl=False
+```
+
 ## Tests <a name = "tests"></a>
 
 Before working in the ELT DAG in Apache Airflow, I used the Jupyter Lab environment to develop and test the medallion steps, validating the connections between the containers (Jupyter, spark, minio) and the integrity of data.
 
 After that, when developing the DAG, I made some tests using pytest to check API request status, DAG's integrity, access to minio and spark and check the schema of data, validating the "key" columns of our project (location and brewery type).
+
+The tests developed can be found in the directory "/airflow/tests" and to execute them in docker, run this command:
+```bash
+docker exec airflow pytest -v
+```
 
 ## What comes next? <a name = "what_comes_next"></a>
 

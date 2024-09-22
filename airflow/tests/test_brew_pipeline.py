@@ -1,9 +1,11 @@
 import pytest
 import requests
 import json
+import os
+from unittest.mock import MagicMock, call
 from jsonschema import validate
 from pyspark.sql import SparkSession
-from airflow.models import DagBag
+from airflow.models import DagBag, Connection
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 @pytest.fixture()
@@ -27,7 +29,18 @@ def test_http_connection(connect_api):
 
 # Test if minio is accessible
 def test_minio_access():
-    minio = S3Hook(aws_conn_id = "conn_s3")
+    conn_minio = Connection(
+        conn_id="test_s3",
+        conn_type="aws",
+        extra=json.dumps({
+            "aws_access_key_id": "brew",
+            "aws_secret_access_key": "brew4321",
+            "endpoint_url": "http://minio1:9000/"
+        })
+    )
+
+    os.environ["AIRFLOW_CONN_TEST_S3"] = conn_minio.get_uri()
+    minio = S3Hook(aws_conn_id='test_s3')
     assert minio.check_for_bucket("bronze")
 
 # Test if spark is accessible
